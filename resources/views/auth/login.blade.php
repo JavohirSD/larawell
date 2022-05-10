@@ -58,6 +58,15 @@
                                         {{ __('Remember Me') }} : {{date('H:i:s')}}
                                     </label>
                                 </div>
+
+                                <div class="form-group mt-3">
+                                    {!! NoCaptcha::renderJs('ru') !!}
+                                    {!! NoCaptcha::display() !!}
+                                    @error('g-recaptcha-response')
+                                    <div class="alert alert-danger mt-1 mb-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
                             </div>
                         </div>
 

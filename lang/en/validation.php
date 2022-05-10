@@ -148,6 +148,10 @@ return [
     */
 
     'custom' => [
+        'g-recaptcha-response' => [
+            'required' => 'Пожалуйста, подтвердите, что вы не робот.',
+            'captcha' => 'Ошибка! повторите попытку позже или обратитесь к администратору сайта.',
+        ],
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
