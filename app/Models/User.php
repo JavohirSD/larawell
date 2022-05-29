@@ -15,8 +15,19 @@ class User extends Authenticatable
     public function __construct(array $attributes = [])
     {
         $this->table = env('USER_TABLE');
+        $this->fillable += [
+            'username' => env('USERNAME_FIELD'),
+            'password' => env('PASSWORD_FIELD'),
+        ];
         parent::__construct($attributes);
     }
+
+    // Set or update timestamp columns
+    public $timestamps = true;
+
+
+    // Set date format to save DB (U - unix timestamp)
+    protected $dateFormat = 'U';
 
     /**
      * The attributes that are mass assignable.
@@ -26,7 +37,9 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'password',
+//        'username',
+//        'password',
+        'auth_key'
     ];
 
     /**
@@ -39,6 +52,11 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $attributes = [
+        'auth_key' => '12345678'
+    ];
+
+
     /**
      * The attributes that should be cast.
      *
@@ -46,6 +64,8 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'created_at' => 'datetime:d.m.Y H:i',
+        'updated_at' => 'datetime:d.m.Y H:i'
     ];
 
     public function getAuthPassword()
@@ -58,4 +78,29 @@ class User extends Authenticatable
         return env('REMEMBER_TOKEN_FIELD');
     }
 
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

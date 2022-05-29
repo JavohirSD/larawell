@@ -1,8 +1,11 @@
 Laravel v9.12.0 installed
-
 composer require laravel/ui  executed
 php artisan ui bootstrap --auth executed
  initail npm install && npm run dev executed
 barryvdh/laravel-debugbar installed
 login, password, token fields and auth table name loads from env file.
-Google reCaptcha installed
+Google reCAPTCHA added and configured
+
+Force JSON response middleware added
+Sample API model and its request validator created
+User authentication added for API users
