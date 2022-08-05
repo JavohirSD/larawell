@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserRegisterRequest extends FormRequest
+class UserLoginRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,13 +25,10 @@ class UserRegisterRequest extends FormRequest
     {
         $username = config('services.custom.username_field');
         $password = config('services.custom.password_field');
-        $table = config('services.custom.user_table');
 
         return [
-            'email'   => 'required|string|email|max:255|unique:'.$table.','.'email',
-            'name'    => 'required|string|min:4|max:255',
-            $username => 'required|string|min:5|max:255|unique:'.$table.','.$username,
-            $password => 'required|string|min:6|max:255',
+            $username => 'required|string|min:5|max:255',
+            $password => 'required|string|min:6|max:255'
         ];
     }
 }

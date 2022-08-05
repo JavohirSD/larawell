@@ -31,4 +31,11 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'custom' => [
+        'user_table'     => env('USER_TABLE'),
+        'remember_token' => env('REMEMBER_TOKEN_FIELD'),
+        'username_field' => env('USERNAME_FIELD'),
+        'password_field' => env('PASSWORD_FIELD')
+    ]
+
 ];

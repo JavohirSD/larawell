@@ -1,11 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use function auth;
+use function bcrypt;
+use function env;
 
 class AuthController extends Controller
 {
@@ -15,16 +20,16 @@ class AuthController extends Controller
 
     public function __construct(array $attributes = [])
     {
-        $this->username_column = env('USERNAME_FIELD');
-        $this->password_column = env('PASSWORD_FIELD');
+        $this->username_column = config('services.custom.username_field');
+        $this->password_column = config('services.custom.password_field');
     }
 
 
     public function register(UserRegisterRequest $request)
     {
         $user = User::create([
-            'name'          => $request->input('name'),
-            'email'         => $request->input($this->username_column) . '@mail.ru',
+            'name'  => $request->input('name'),
+            'email' => $request->input($this->username_column) . '@mail.ru',
             $this->username_column => $request->input($this->username_column),
             $this->password_column => bcrypt($request->input($this->password_column))
         ]);
@@ -38,7 +43,7 @@ class AuthController extends Controller
     }
 
 
-    public function login(UserRegisterRequest $request)
+    public function login(UserLoginRequest $request): array
     {
         // Check login existance
         $user = User::where($this->username_column, $request->input($this->username_column))->first();
@@ -60,7 +65,8 @@ class AuthController extends Controller
     }
 
 
-    public function logout(Request $request) {
+    public function logout(): array
+    {
         auth()->user()->tokens()->delete();
         return [
             'message' => 'Logged out'

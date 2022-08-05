@@ -9,3 +9,4 @@ Google reCAPTCHA added and configured
 Force JSON response middleware added
 Sample API model and its request validator created
 User authentication added for API users
+Blog and category model created with relations

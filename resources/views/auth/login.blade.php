@@ -16,18 +16,18 @@
 
                             <div class="col-md-6">
                                 <input
-                                    id="{{env('USERNAME_FIELD')}}"
+                                    id="{{config('services.custom.username_field')}}"
                                     type="text"
                                     class="form-control
-                                            @error(env('USERNAME_FIELD'))
+                                            @error(config('services.custom.username_field'))
                                             is-invalid @enderror"
-                                    name="{{env('USERNAME_FIELD')}}"
-                                    value="{{ old(env('USERNAME_FIELD')) }}"
+                                    name="{{config('services.custom.username_field')}}"
+                                    value="{{ old(config('services.custom.username_field')) }}"
                                     required
-                                    autocomplete="{{env('USERNAME_FIELD')}}"
+                                    autocomplete="{{config('services.custom.username_field')}}"
                                     autofocus>
 
-                                @error(env('USERNAME_FIELD'))
+                                @error(config('services.custom.username_field'))
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -55,7 +55,7 @@
                                     <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
 
                                     <label class="form-check-label" for="remember">
-                                        {{ __('Remember Me') }} : {{date('H:i:s')}}
+                                        {{ __('Remember Me') }}
                                     </label>
                                 </div>
 

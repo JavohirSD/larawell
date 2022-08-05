@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBlogPostRequest;
 use App\Models\Blog;
 use App\Models\Enums\BlogStatus;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Redis;
 
 class BlogController extends Controller
 {
@@ -29,18 +29,29 @@ class BlogController extends Controller
      */
     public function store(StoreBlogPostRequest $request)
     {
-        return Blog::create($request->all());
+        $blog = Blog::create($request->all());
+
+        Redis::set('blog_' . $blog->id, $blog);
+
+        return $blog;
     }
 
     /**
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return Response
      */
-    public function show($id)
+    public function show(int $id)
     {
-        return Blog::where('id', $id)->where('status', BlogStatus::ACTIVE)->first();
+       $cachedBlog = Redis::get('blog_' . $id );
+
+       if($cachedBlog === null){
+           $blog = Blog::where('id', $id)->where('status', BlogStatus::ACTIVE)->first();
+           Redis::set('blog_' . $id, $blog);
+           return $blog;
+       }
+
+       return json_decode($cachedBlog, true);
     }
 
 
@@ -49,11 +60,16 @@ class BlogController extends Controller
      *
      * @param  StoreBlogPostRequest  $request
      * @param  int  $id
-     * @return Response
+     * @return Response|bool
      */
-    public function update(StoreBlogPostRequest $request, $id)
+    public function update(StoreBlogPostRequest $request, int $id)
     {
-        return Blog::find($id)->update($request->all());
+        $blog = Blog::where('id', $id)->where('status', BlogStatus::ACTIVE)->first();
+        if($blog->update($request->all())){
+            Redis::set('blog_' . $id, $blog);
+            return $blog;
+        }
+        return false;
     }
 
     /**
@@ -62,13 +78,21 @@ class BlogController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function destroy($id)
+    public function destroy(int $id)
     {
         return Blog::where('id', $id)->where('status', BlogStatus::ACTIVE)->delete();
     }
 
-    public function search($title)
+    public function search(string $title)
     {
-        return Blog::where('title', 'like', '%'.$title.'%')->where('status', BlogStatus::ACTIVE)->get();
+        $cachedBlog = Redis::get('blog_title_' . $title);
+
+       if($cachedBlog === null){
+           $blog = Blog::where('title', 'like', '%'.$title.'%')->where('status', BlogStatus::ACTIVE)->get();
+           Redis::set('blog_title_' . $title, $blog);
+           return $blog;
+       }
+
+       return json_decode($cachedBlog, true);
     }
 }

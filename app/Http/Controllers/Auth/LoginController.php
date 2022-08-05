@@ -23,7 +23,7 @@ class LoginController extends Controller
 
     public function username(): string
     {
-        return env('USERNAME_FIELD');
+        return config('services.custom.username_field');
     }
     /**
      * Where to redirect users after login.

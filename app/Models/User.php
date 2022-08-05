@@ -14,10 +14,10 @@ class User extends Authenticatable
 
     public function __construct(array $attributes = [])
     {
-        $this->table = env('USER_TABLE');
+        $this->table = config('services.custom.user_table');
         $this->fillable += [
-            'username' => env('USERNAME_FIELD'),
-            'password' => env('PASSWORD_FIELD'),
+            'username' => config('services.custom.username_field'),
+            'password' => config('services.custom.password_field')
         ];
         parent::__construct($attributes);
     }
@@ -70,12 +70,12 @@ class User extends Authenticatable
 
     public function getAuthPassword()
     {
-        return $this->{env('PASSWORD_FIELD')};
+        return $this->{config('services.custom.password_field')};
     }
 
     public function getRememberTokenName()
     {
-        return env('REMEMBER_TOKEN_FIELD');
+        return config('services.custom.remember_token');
     }
 
 

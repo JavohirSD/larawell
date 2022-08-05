@@ -36,7 +36,8 @@ class Blog extends Model
         'slug',
         'image',
         'author_id',
-        'status'
+        'status',
+        'category_id'
     ];
 
 
@@ -53,4 +54,9 @@ class Blog extends Model
         'created_at' => 'datetime:d.m.Y H:i',
         'updated_at' => 'datetime:d.m.Y H:i'
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id','id');
+    }
 }
