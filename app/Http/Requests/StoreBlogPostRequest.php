@@ -2,12 +2,18 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Controllers\Helpers\ApiResponse;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
+use JetBrains\PhpStorm\ArrayShape;
+use Symfony\Component\HttpFoundation\Response;
 
 class StoreBlogPostRequest extends FormRequest
 {
-    public function getId()
+    public function getId(): object|string|null
     {
         return request()->route('blog');
     }
@@ -16,7 +22,7 @@ class StoreBlogPostRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -26,7 +32,7 @@ class StoreBlogPostRequest extends FormRequest
      *
      * @return array
      */
-    public function messages()
+    public function messages(): array
     {
         return [
             'title.unique' => 'A title should be unique',
@@ -50,5 +56,11 @@ class StoreBlogPostRequest extends FormRequest
             'slug'        => 'min:8|max:128|unique:blog,slug,'.$this->getId(),
             'author_id'   => 'integer|min:1|max:1000',
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        $response = ApiResponse::json(null, false,Response::HTTP_UNPROCESSABLE_ENTITY, $validator->errors());
+        throw new ValidationException($validator, $response);
     }
 }

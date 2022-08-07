@@ -55,6 +55,7 @@ class Blog extends Model
         'updated_at' => 'datetime:d.m.Y H:i'
     ];
 
+
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id','id');

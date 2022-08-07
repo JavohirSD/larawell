@@ -23,7 +23,7 @@ return new class extends Migration
             $table->tinyInteger('language')->default(1);
             $table->string('image')->nullable()->default(NULL);
             $table->integer('author_id');
-            $table->string('signature',255)->default(NULL);
+            $table->integer('category_id')->default(0);
             $table->integer('created_at');
             $table->integer('updated_at');
         });
