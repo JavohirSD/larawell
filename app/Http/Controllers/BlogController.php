@@ -1,15 +1,15 @@
 <?php
+/** @noinspection PhpDynamicAsStaticMethodCallInspection */
 
 namespace App\Http\Controllers;
 
-use App\DTO\BlogDTO;
 use App\Http\Controllers\Helpers\ApiResponse;
 use App\Http\Requests\StoreBlogPostRequest;
+use App\Http\Resources\BlogCollection;
 use App\Models\Blog;
 use App\Models\Enums\BlogStatus;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Redis;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class BlogController extends Controller
@@ -26,7 +26,7 @@ class BlogController extends Controller
 
         return Cache::remember('blog_index_' . $pageNumber . '_' . $pageLimit, 3600, function () use ($pageLimit) {
             return ApiResponse::json(
-                Blog::where('status', BlogStatus::ACTIVE)->paginate($pageLimit),
+                new BlogCollection(Blog::where('status', BlogStatus::ACTIVE)->paginate($pageLimit)),
                 true,
                 SymfonyResponse::HTTP_OK
             );
@@ -89,13 +89,14 @@ class BlogController extends Controller
      *
      * @param  StoreBlogPostRequest  $request
      * @param  int  $id
+     *
      * @return JsonResponse|bool
      */
     public function update(StoreBlogPostRequest $request, int $id) : JsonResponse|bool
     {
         $blog = Blog::where('id', $id)->where('status', BlogStatus::ACTIVE)->first();
         if($blog->update($request->all())){
-            Cache::set('blog_' . $id, $blog, 3600);
+            Cache::put('blog_' . $id, $blog, 3600);
             return ApiResponse::json($blog, true, SymfonyResponse::HTTP_ACCEPTED);
         }
         return false;
@@ -119,16 +120,21 @@ class BlogController extends Controller
         return ApiResponse::json(null, false,SymfonyResponse::HTTP_NOT_FOUND);
     }
 
-    public function search(string $title)
+    /**
+     * @param string $title
+     *
+     * @return JsonResponse
+     */
+    public function search(string $title): JsonResponse
     {
-        $cachedBlog = Redis::get('blog_title_' . $title);
+        $pageLimit  = request()->input('limit',2);
 
-       if($cachedBlog === null){
-           $blog = Blog::where('title', 'like', '%'.$title.'%')->where('status', BlogStatus::ACTIVE)->get();
-           Redis::set('blog_title_' . $title, $blog);
-           return $blog;
-       }
-
-       return json_decode($cachedBlog, true);
+            return ApiResponse::json(
+                Blog::where('title', 'like', '%'.$title.'%')
+                        ->where('status', BlogStatus::ACTIVE)
+                        ->paginate($pageLimit),
+                true,
+                SymfonyResponse::HTTP_OK
+            );
     }
 }

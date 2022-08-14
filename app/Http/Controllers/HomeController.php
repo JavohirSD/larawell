@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Blog;
-use App\Models\Enums\BlogStatus;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 
 class HomeController extends Controller
 {
@@ -34,8 +34,8 @@ class HomeController extends Controller
         ]);
     }
 
-    public function test(){
-        return config('services.custom.password_field');
+    public function test(): Factory|View|Application
+    {
 
         return view('home');
     }

@@ -6,9 +6,12 @@ use App\Models\Enums\BlogStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Post
+ * Blog
+ *
+ * @property int id
  *
  * @mixin Builder
  */
@@ -53,16 +56,17 @@ class Blog extends Model
     ];
 
 
-    // Convert response date format for UI
+    // Convert/Cast response format
     protected $casts = [
         // 'created_at' => 'timestamp',
         // 'updated_at' => 'timestamp',
         'created_at' => 'datetime:d.m.Y H:i',
-        'updated_at' => 'datetime:d.m.Y H:i'
+        'updated_at' => 'datetime:d.m.Y H:i',
+        'status' => BlogStatus::class
     ];
 
 
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'category_id','id');
     }

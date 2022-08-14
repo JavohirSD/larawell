@@ -45,22 +45,28 @@ class ShowBlogsTest extends TestCase
     public function test_get_all_blogs()
     {
         $blog = Blog::find(1);
+        $total_count = Blog::query()->count();
 
         $this->actingAs($this->getTestUser())
-            ->json('GET', 'api/blogs?page=1&limit=1', ['Accept' => 'application/json'])
+            ->json('GET', 'api/blogs?page=1&limit=2', ['Accept' => 'application/json'])
             ->assertStatus(200)
             ->assertJson([
                 "status" => true,
                 "data"   => [
-                    "current_page" => 1,
-                    "per_page"     => 1,
-                    "data"         => [
+                    "blogs"        => [
                         [
                             "id"          => $blog->id,
                             "title"       => $blog->title,
                             "anons"       => $blog->anons,
                             "description" => $blog->description
                         ]
+                    ],
+                    "pagination" => [
+                        "total"        => $total_count,
+                        "count"        => 2,
+                        "per_page"     => 2,
+                        "current_page" => 1,
+                        "total_pages"  => ($total_count / 2)
                     ]
                 ]
             ]);
