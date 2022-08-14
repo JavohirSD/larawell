@@ -2,7 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Controllers\Helpers\ApiResponse;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserRegisterRequest extends FormRequest
 {
@@ -33,5 +37,11 @@ class UserRegisterRequest extends FormRequest
             $username => 'required|string|min:5|max:255|unique:'.$table.','.$username,
             $password => 'required|string|min:6|max:255',
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        $response = ApiResponse::json(null, false,Response::HTTP_UNPROCESSABLE_ENTITY, $validator->errors());
+        throw new ValidationException($validator, $response);
     }
 }

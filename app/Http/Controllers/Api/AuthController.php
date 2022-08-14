@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Helpers\ApiResponse;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpFoundation\Response;
 use function auth;
 use function bcrypt;
 use function env;
@@ -29,21 +32,18 @@ class AuthController extends Controller
     {
         $user = User::create([
             'name'  => $request->input('name'),
-            'email' => $request->input($this->username_column) . '@mail.ru',
+            'email' => $request->input('email'),
             $this->username_column => $request->input($this->username_column),
             $this->password_column => bcrypt($request->input($this->password_column))
         ]);
 
         $token = $user->createToken(uniqid(true) . time())->plainTextToken;
 
-        return [
-            'user'  => $user,
-            'token' => $token
-        ];
+        return ApiResponse::json(['user'  => $user, 'token' => $token], true, Response::HTTP_CREATED);
     }
 
 
-    public function login(UserLoginRequest $request): array
+    public function login(UserLoginRequest $request): array|JsonResponse
     {
         // Check login existance
         $user = User::where($this->username_column, $request->input($this->username_column))->first();
@@ -51,17 +51,13 @@ class AuthController extends Controller
 
         // Check password matching
         if (!$user || !Hash::check($request->input($this->password_column), $user->getAuthPassword())) {
-            return [
-                'message' => 'Bad credentials'
-            ];
+            return ApiResponse::json(null, false, Response::HTTP_FORBIDDEN, 'Bad credentials');
         }
 
         $token = $user->createToken(uniqid(true) . time())->plainTextToken;
 
-        return [
-            'user'  => $user,
-            'token' => $token
-        ];
+        return ApiResponse::json(['user'  => $user,'token' => $token], true, Response::HTTP_OK);
+
     }
 
 

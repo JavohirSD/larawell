@@ -5,7 +5,13 @@ namespace App\Models;
 use App\Models\Enums\BlogStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * Post
+ *
+ * @mixin Builder
+ */
 class Blog extends Model
 {
     use HasFactory;

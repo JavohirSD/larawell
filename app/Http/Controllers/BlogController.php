@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\BlogDTO;
 use App\Http\Controllers\Helpers\ApiResponse;
 use App\Http\Requests\StoreBlogPostRequest;
 use App\Models\Blog;
@@ -20,8 +21,8 @@ class BlogController extends Controller
      */
     public function index() : JsonResponse
     {
-        $pageNumber = request()->get('page',1);
-        $pageLimit  = request()->get('limit',2);
+        $pageNumber = request()->input('page',1);
+        $pageLimit  = request()->input('limit',2);
 
         return Cache::remember('blog_index_' . $pageNumber . '_' . $pageLimit, 3600, function () use ($pageLimit) {
             return ApiResponse::json(
@@ -79,7 +80,6 @@ class BlogController extends Controller
                 $error_message = __("Blog with this ID not found");
             }
         }
-
         return ApiResponse::json($blog, $status, $status_code, $error_message);
     }
 
